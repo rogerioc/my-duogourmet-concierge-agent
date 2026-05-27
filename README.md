@@ -1,4 +1,4 @@
-# Duo Concierge 🍽️
+# <img src="agent/favicon.png" width="32" height="32" valign="middle" /> Duo Concierge
 
 This is **Duo Concierge**, an AI agent specialized in the Duo Gourmet program in Belo Horizonte.
 
