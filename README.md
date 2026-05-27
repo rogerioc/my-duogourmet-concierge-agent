@@ -4,6 +4,12 @@ This is **Duo Concierge**, an AI agent specialized in the Duo Gourmet program in
 
 Built on top of the **DuoList BH** interactive map, this agent utilizes the Google Gemini API to help you decide where to use your benefit based on simulated context, time, and location.
 
+## 🌐 Live Demo
+
+You can access the live application here:
+👉 **[rcs-dougourmet-concierge.streamlit.app](https://rcs-dougourmet-concierge.streamlit.app/)**
+
+
 ## 🚀 How to Run the App
 1. Clone or download this project
 2. Install dependencies: `pip install -r requirements.txt`
