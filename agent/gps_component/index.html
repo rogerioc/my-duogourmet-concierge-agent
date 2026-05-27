@@ -46,6 +46,10 @@
         
         let map = null;
         let marker = null;
+        let currentLat = DEFAULT_LAT;
+        let currentLon = DEFAULT_LON;
+        let gpsSuccess = false;
+        let mapInitialized = false;
 
         // Envia as coordenadas de volta ao Streamlit
         function sendToStreamlit(lat, lon) {
@@ -55,7 +59,22 @@
             }, "*");
         }
 
+        // Define a altura do iframe para caber o mapa
+        function setHeight() {
+            window.parent.postMessage({
+                type: "streamlit:setFrameHeight",
+                height: 220
+            }, "*");
+        }
+
         function initMap(lat, lon, success) {
+            if (mapInitialized) return;
+            mapInitialized = true;
+
+            currentLat = lat;
+            currentLon = lon;
+            gpsSuccess = success;
+
             const infoEl = document.getElementById("info");
             if (success) {
                 infoEl.innerText = "📍 GPS: Coordenadas obtidas";
@@ -79,6 +98,8 @@
             // Evento ao arrastar o marcador
             marker.on('dragend', function() {
                 const pos = marker.getLatLng();
+                currentLat = pos.lat;
+                currentLon = pos.lng;
                 infoEl.innerText = "📍 Localização ajustada pelo marcador";
                 sendToStreamlit(pos.lat, pos.lng);
             });
@@ -86,6 +107,8 @@
             // Evento ao clicar no mapa
             map.on('click', function(e) {
                 marker.setLatLng(e.latlng);
+                currentLat = e.latlng.lat;
+                currentLon = e.latlng.lng;
                 infoEl.innerText = "📍 Localização ajustada pelo clique";
                 sendToStreamlit(e.latlng.lat, e.latlng.lng);
             });
@@ -109,6 +132,24 @@
         } else {
             initMap(DEFAULT_LAT, DEFAULT_LON, false);
         }
+
+        // ── Streamlit Component Protocol ─────────────────────────
+        // Envia o sinal de que o componente está pronto para renderizar
+        window.parent.postMessage({
+            apiVersion: 1,
+            type: "streamlit:componentReady"
+        }, "*");
+
+        // Escuta os eventos enviados pelo Streamlit
+        window.addEventListener("message", function(event) {
+            if (event.data.type === "streamlit:render") {
+                setHeight();
+                // Envia as coordenadas se o mapa já estiver inicializado
+                if (mapInitialized) {
+                    sendToStreamlit(currentLat, currentLon);
+                }
+            }
+        });
     </script>
 </body>
 </html>
