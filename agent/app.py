@@ -22,6 +22,10 @@ if "steps" not in st.session_state:
     st.session_state.steps = {}
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "gps_prompt_shown" not in st.session_state:
+    st.session_state.gps_prompt_shown = False
+if "gps_active_toast_shown" not in st.session_state:
+    st.session_state.gps_active_toast_shown = False
 
 # ── Custom CSS para alinhar tipografia e marca com DuoList ───
 st.markdown("""
@@ -138,17 +142,29 @@ lat_usuario = None
 lon_usuario = None
 opcao_bairro = None
 
-if modo_localizacao == "Usar GPS do Navegador (Leaflet)":
+if modo_localizacao == "Desativada":
+    st.session_state.gps_active_toast_shown = False
+    if not st.session_state.gps_prompt_shown:
+        st.toast("🧭 Dica: Ative a geolocalização na barra lateral para calcular distâncias e ver restaurantes mais próximos!", icon="💡")
+        st.session_state.gps_prompt_shown = True
+
+elif modo_localizacao == "Usar GPS do Navegador (Leaflet)":
+    st.session_state.gps_prompt_shown = False
     st.sidebar.caption("Permita o acesso ao GPS na janela do mapa abaixo:")
     gps_data = render_gps_picker(key="main_gps_picker")
     if gps_data:
         lat_usuario = gps_data.get("lat")
         lon_usuario = gps_data.get("lon")
         st.sidebar.success(f"GPS Ativo: {lat_usuario:.4f}, {lon_usuario:.4f}")
+        if not st.session_state.gps_active_toast_shown:
+            st.toast("📍 GPS Ativado com sucesso! O assistente agora calculará a distância até os restaurantes.", icon="✅")
+            st.session_state.gps_active_toast_shown = True
     else:
         st.sidebar.info("Aguardando coordenadas do GPS...")
         
 elif modo_localizacao == "Simular Ponto de Referência":
+    st.session_state.gps_prompt_shown = False
+    st.session_state.gps_active_toast_shown = False
     opcao_bairro = st.sidebar.selectbox(
         "Selecione um ponto em BH",
         [
