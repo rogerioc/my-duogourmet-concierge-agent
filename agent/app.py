@@ -10,6 +10,7 @@ from agent.location_picker import render_gps_picker
 
 # ── Configuração da página ──────────────────────────────────
 from PIL import Image
+import base64
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 favicon_path = os.path.join(current_dir, "favicon.png")
@@ -18,6 +19,13 @@ try:
     favicon = favicon.resize((64, 64))
 except Exception:
     favicon = "🍽️"
+
+try:
+    with open(favicon_path, "rb") as img_file:
+        img_base64 = base64.b64encode(img_file.read()).decode()
+    logo_html = f'<img src="data:image/png;base64,{img_base64}" style="width: 32px; height: 32px; border-radius: 6px;" alt="Logo">'
+except Exception:
+    logo_html = '<span style="font-size: 28px; color: #fbcd4b;">🍽️</span>'
 
 st.set_page_config(
     page_title="Duo Concierge",
@@ -241,9 +249,9 @@ else:
     
     contexto_tempo = f"Hoje é {dia_pt}, às {hora_str}. Período: {periodo}."
 # ── Cabeçalho principal com Branding do DuoList ──────────────
-st.markdown("""
+st.markdown(f"""
     <div style="display: flex; align-items: center; gap: 12px; margin-top: -20px; margin-bottom: 5px;">
-        <span style="font-size: 28px; color: #fbcd4b;">🍽️</span>
+        {logo_html}
         <h1 style="font-size: 26px; font-weight: 700; margin: 0; color: #f8fafc; font-family: 'Outfit', sans-serif;">
             Duo<span style="color: #fbcd4b;">Concierge</span>
         </h1>
