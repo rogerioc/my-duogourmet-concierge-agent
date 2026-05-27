@@ -15,6 +15,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 favicon_path = os.path.join(current_dir, "favicon.png")
 try:
     favicon = Image.open(favicon_path)
+    favicon = favicon.resize((64, 64))
 except Exception:
     favicon = "🍽️"
 
