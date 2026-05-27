@@ -54,6 +54,7 @@
         // Envia as coordenadas de volta ao Streamlit
         function sendToStreamlit(lat, lon) {
             window.parent.postMessage({
+                isStreamlitMessage: true,
                 type: "streamlit:setComponentValue",
                 value: { lat: lat, lon: lon }
             }, "*");
@@ -62,6 +63,7 @@
         // Define a altura do iframe para caber o mapa
         function setHeight() {
             window.parent.postMessage({
+                isStreamlitMessage: true,
                 type: "streamlit:setFrameHeight",
                 height: 220
             }, "*");
@@ -136,6 +138,7 @@
         // ── Streamlit Component Protocol ─────────────────────────
         // Envia o sinal de que o componente está pronto para renderizar
         window.parent.postMessage({
+            isStreamlitMessage: true,
             apiVersion: 1,
             type: "streamlit:componentReady"
         }, "*");
