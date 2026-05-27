@@ -2,7 +2,7 @@
 
 This is **Duo Concierge**, an AI agent specialized in the Duo Gourmet program in Belo Horizonte.
 
-Built on top of the **DuoList BH** interactive map, this agent utilizes the Google Gemini API to help you decide where to use your benefit based on simulated context, time, and location.
+Built on top of the **DuoList BH** interactive map ([Live Map](https://rogerioc.github.io/my-duogourmet-map/) | [GitHub Repo](https://github.com/rogerioc/my-duogourmet-map)), this agent utilizes the Google Gemini API to help you decide where to use your benefit based on simulated context, time, and location.
 
 ## 🌐 Live Demo
 
