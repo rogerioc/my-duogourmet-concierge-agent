@@ -66,13 +66,20 @@ def buscar_restaurantes(bairro: str = None, cozinha: str = None, lat_usuario: fl
         if lat_usuario and lon_usuario and r_lat and r_lon:
             distancia = calcular_distancia_haversine(lat_usuario, lon_usuario, r_lat, r_lon)
             
+        # Extrair o slug correto
+        r_url = r.get("url") or ""
+        url_parts = [p for p in r_url.split("/") if p]
+        slug = url_parts[-1] if url_parts else ""
+
         # Formatando retorno reduzido para economizar tokens
         resultados.append({
             "name": r.get("name"),
             "neighborhood": r.get("neighborhood"),
             "cuisine": r.get("cuisine"),
             "rating": r.get("google_rating"),
-            "distance_km": round(distancia, 2) if distancia != float('inf') else None
+            "distance_km": round(distancia, 2) if distancia != float('inf') else None,
+            "url": r_url,
+            "slug": slug
         })
         
     # Ordenação: Prioridade para distância (se existir), depois por rating
@@ -146,6 +153,9 @@ def obter_detalhes_restaurante(restaurant_name: str):
     
     for r in db:
         if remover_acentos(r.get("name", "")) == name_norm:
+            r_url = r.get("url") or ""
+            url_parts = [p for p in r_url.split("/") if p]
+            slug = url_parts[-1] if url_parts else ""
             return {
                 "name": r.get("name"),
                 "cuisine": r.get("cuisine"),
@@ -158,7 +168,9 @@ def obter_detalhes_restaurante(restaurant_name: str):
                 "google_maps_url": r.get("google_maps_url"),
                 "phone": r.get("phone"),
                 "website": r.get("website"),
-                "schedule": r.get("schedule")
+                "schedule": r.get("schedule"),
+                "url": r_url,
+                "slug": slug
             }
     return {"erro": "Restaurante não encontrado."}
 
