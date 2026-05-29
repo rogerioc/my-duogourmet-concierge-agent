@@ -10,13 +10,27 @@ _restaurantes_data = None
 def get_restaurantes():
     global _restaurantes_data
     if _restaurantes_data is None:
-        file_path = Path(__file__).parent.parent / "restaurantes_bh.json"
+        _restaurantes_data = []
+        base_dir = Path(__file__).parent.parent
+        
+        # Carregar Belo Horizonte
+        bh_path = base_dir / "restaurantes_bh.json"
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                _restaurantes_data = json.load(f)
+            if bh_path.exists():
+                with open(bh_path, "r", encoding="utf-8") as f:
+                    _restaurantes_data.extend(json.load(f))
         except Exception as e:
-            print(f"Erro ao carregar {file_path}: {e}")
-            _restaurantes_data = []
+            print(f"Erro ao carregar {bh_path}: {e}")
+            
+        # Carregar São Paulo
+        sp_path = base_dir / "restaurantes_sp.json"
+        try:
+            if sp_path.exists():
+                with open(sp_path, "r", encoding="utf-8") as f:
+                    _restaurantes_data.extend(json.load(f))
+        except Exception as e:
+            print(f"Erro ao carregar {sp_path}: {e}")
+            
     return _restaurantes_data
 
 def calcular_distancia_haversine(lat1, lon1, lat2, lon2):
@@ -33,7 +47,7 @@ def calcular_distancia_haversine(lat1, lon1, lat2, lon2):
     
     return R * c
 
-def buscar_restaurantes(bairro: str = None, cozinha: str = None, lat_usuario: float = None, lon_usuario: float = None):
+def buscar_restaurantes(bairro: str = None, cozinha: str = None, lat_usuario: float = None, lon_usuario: float = None, cidade: str = None):
     """
     Busca restaurantes ativos no Duo Gourmet aplicando filtros e retornando os melhores.
     """
@@ -43,13 +57,27 @@ def buscar_restaurantes(bairro: str = None, cozinha: str = None, lat_usuario: fl
     bairro_norm = remover_acentos(bairro) if bairro else None
     cozinha_norm = remover_acentos(cozinha) if cozinha else None
     
+    cidade_norm = remover_acentos(cidade).lower().strip() if cidade else None
+    if cidade_norm == "bh":
+        cidade_norm = "belo-horizonte"
+    elif cidade_norm == "sp":
+        cidade_norm = "sao-paulo"
+    if cidade_norm:
+        cidade_norm = cidade_norm.replace(" ", "-")
+    
     for r in db:
-        if r.get("google_business_status") != "OPERATIONAL":
+        status = r.get("google_business_status")
+        if status and status not in ("OPERATIONAL", "UNKNOWN"):
             continue
             
         r_bairro = remover_acentos(r.get("neighborhood", ""))
         r_cozinha = remover_acentos(r.get("cuisine", ""))
+        r_cidade = remover_acentos(r.get("city", "")).lower().replace(" ", "-")
         
+        # Filtro de Cidade
+        if cidade_norm and cidade_norm not in r_cidade:
+            continue
+            
         # Filtro de Bairro (busca parcial)
         if bairro_norm and bairro_norm not in r_bairro:
             continue

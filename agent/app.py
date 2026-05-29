@@ -206,23 +206,46 @@ elif modo_localizacao == "Usar GPS do Navegador (Leaflet)":
 elif modo_localizacao == "Simular Ponto de Referência":
     st.session_state.gps_prompt_shown = False
     st.session_state.gps_active_toast_shown = False
-    opcao_bairro = st.sidebar.selectbox(
-        "Selecione um ponto em BH",
-        [
-            "Savassi (Praça Diogo de Vasconcelos)",
-            "Lourdes (Praça Marília de Dirceu)",
-            "Centro (Praça da Estação)",
-            "Buritis (Parque Aggeo Pio Sobrinho)",
-            "Pampulha (Igrejinha)"
-        ]
+    cidade_simulacao = st.sidebar.selectbox(
+        "Cidade de Simulação",
+        ["Belo Horizonte (BH)", "São Paulo (SP)"]
     )
-    coords = {
-        "Savassi (Praça Diogo de Vasconcelos)": (-19.9386, -43.9359),
-        "Lourdes (Praça Marília de Dirceu)": (-19.9348, -43.9455),
-        "Centro (Praça da Estação)": (-19.9169, -43.9346),
-        "Buritis (Parque Aggeo Pio Sobrinho)": (-19.9723, -43.9686),
-        "Pampulha (Igrejinha)": (-19.8519, -43.9793)
-    }
+    if cidade_simulacao == "Belo Horizonte (BH)":
+        opcao_bairro = st.sidebar.selectbox(
+            "Selecione um ponto em BH",
+            [
+                "Savassi (Praça Diogo de Vasconcelos)",
+                "Lourdes (Praça Marília de Dirceu)",
+                "Centro (Praça da Estação)",
+                "Buritis (Parque Aggeo Pio Sobrinho)",
+                "Pampulha (Igrejinha)"
+            ]
+        )
+        coords = {
+            "Savassi (Praça Diogo de Vasconcelos)": (-19.9386, -43.9359),
+            "Lourdes (Praça Marília de Dirceu)": (-19.9348, -43.9455),
+            "Centro (Praça da Estação)": (-19.9169, -43.9346),
+            "Buritis (Parque Aggeo Pio Sobrinho)": (-19.9723, -43.9686),
+            "Pampulha (Igrejinha)": (-19.8519, -43.9793)
+        }
+    else:
+        opcao_bairro = st.sidebar.selectbox(
+            "Selecione um ponto em SP",
+            [
+                "Pinheiros (Estação Pinheiros)",
+                "Jardins (Oscar Freire)",
+                "Itaim Bibi (Parque do Povo)",
+                "Vila Madalena (Beco do Batman)",
+                "Centro (Praça da Sé)"
+            ]
+        )
+        coords = {
+            "Pinheiros (Estação Pinheiros)": (-23.5663, -46.7029),
+            "Jardins (Oscar Freire)": (-23.5616, -46.6660),
+            "Itaim Bibi (Parque do Povo)": (-23.5852, -46.6853),
+            "Vila Madalena (Beco do Batman)": (-23.5539, -46.6966),
+            "Centro (Praça da Sé)": (-23.5505, -46.6333)
+        }
     lat_usuario, lon_usuario = coords[opcao_bairro]
     st.sidebar.caption(f"Simulando Lat: {lat_usuario} / Lon: {lon_usuario}")
 st.sidebar.markdown("---")
@@ -270,7 +293,7 @@ st.markdown(f"""
         </h1>
     </div>
     <p style="font-size: 13px; color: #94a3b8; margin-top: -6px; margin-bottom: 20px; font-weight: 300;">
-        Seu assistente inteligente de gastronomia integrado com o mapa DuoList BH
+        Seu assistente inteligente de gastronomia integrado com o mapa DuoList BH & SP
     </p>
 """, unsafe_allow_html=True)
 

@@ -35,6 +35,8 @@ class DuoConciergeAgent:
         system_metadata = f"Contexto do Sistema (invisível p/ usuário): {time_context}"
         if lat_usuario is not None and lon_usuario is not None:
             system_metadata += f"\nLocalização atual do usuário (GPS): lat={lat_usuario}, lon={lon_usuario}"
+        else:
+            system_metadata += "\nLocalização atual do usuário (GPS): Não disponível / Desativada"
             
         history.append(
             types.Content(
@@ -55,7 +57,8 @@ class DuoConciergeAgent:
                 config=types.GenerateContentConfig(
                     system_instruction=system_prompt_text,
                     tools=self.tools_list,
-                    temperature=0.4
+                    temperature=0.4,
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True)
                 )
             )
             
