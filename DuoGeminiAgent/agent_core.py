@@ -1,13 +1,13 @@
 import json
 from google import genai
 from google.genai import types
-from agent.tools import (
+from common.tools import (
     buscar_restaurantes,
     verificar_disponibilidade_duo,
     obter_detalhes_restaurante,
     listar_cozinhas_disponiveis
 )
-from agent.prompts import system_prompt_text
+from DuoGeminiAgent.prompts import system_prompt_text
 
 class DuoConciergeAgent:
     def __init__(self, api_key: str):

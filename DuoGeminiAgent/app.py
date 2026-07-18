@@ -6,8 +6,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import streamlit as st
 import datetime
 from zoneinfo import ZoneInfo
-from agent.agent_core import DuoConciergeAgent
-from agent.location_picker import render_gps_picker, render_timezone_detector
+from DuoGeminiAgent.agent_core import DuoConciergeAgent
+from DuoGeminiAgent.location_picker import render_gps_picker, render_timezone_detector
 
 # ── Configuração da página ──────────────────────────────────
 from PIL import Image

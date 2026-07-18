@@ -2,50 +2,9 @@ import json
 import os
 import math
 from pathlib import Path
-from agent.utils import remover_acentos, parse_time, is_time_in_range
-
-# Carregamento Lazy da base de dados
-_restaurantes_data = None
-
-def get_restaurantes():
-    global _restaurantes_data
-    if _restaurantes_data is None:
-        _restaurantes_data = []
-        base_dir = Path(__file__).parent.parent
-        
-        # Carregar Belo Horizonte
-        bh_path = base_dir / "restaurantes_bh.json"
-        try:
-            if bh_path.exists():
-                with open(bh_path, "r", encoding="utf-8") as f:
-                    _restaurantes_data.extend(json.load(f))
-        except Exception as e:
-            print(f"Erro ao carregar {bh_path}: {e}")
-            
-        # Carregar São Paulo
-        sp_path = base_dir / "restaurantes_sp.json"
-        try:
-            if sp_path.exists():
-                with open(sp_path, "r", encoding="utf-8") as f:
-                    _restaurantes_data.extend(json.load(f))
-        except Exception as e:
-            print(f"Erro ao carregar {sp_path}: {e}")
-            
-    return _restaurantes_data
-
-def calcular_distancia_haversine(lat1, lon1, lat2, lon2):
-    """Calcula a distância em km entre dois pontos via Fórmula de Haversine"""
-    if lat1 is None or lon1 is None or lat2 is None or lon2 is None:
-        return float('inf')
-    
-    R = 6371.0 # Raio da terra em km
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-    
-    a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    
-    return R * c
+from common.utils import remover_acentos, parse_time, is_time_in_range
+from common.database import get_restaurantes
+from common.geo import calcular_distancia_haversine
 
 def buscar_restaurantes(bairro: str = None, cozinha: str = None, lat_usuario: float = None, lon_usuario: float = None, cidade: str = None):
     """
@@ -112,10 +71,8 @@ def buscar_restaurantes(bairro: str = None, cozinha: str = None, lat_usuario: fl
         
     # Ordenação: Prioridade para distância (se existir), depois por rating
     if lat_usuario and lon_usuario:
-        # Sort por distância crescente. Se empatar ou não tiver, usa rating decrescente.
         resultados.sort(key=lambda x: (x["distance_km"] if x["distance_km"] is not None else 9999, -(x["rating"] or 0)))
     else:
-        # Sort por rating decrescente apenas
         resultados.sort(key=lambda x: -(x["rating"] or 0))
         
     return resultados[:5]
